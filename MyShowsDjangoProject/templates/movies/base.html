@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'base.html'%}
 
-</body>
-</html>
+{% block content %}
+<section class="ab-info-main py-md-5 py-4 editContent"
+         style="padding-left: 3rem; padding-right: 3rem;">
+
+            {% block sidebar_container %}
+            <div class="container-fluid py-md-3">
+            {% endblock sidebar_container %}
+
+                <div class="row">
+
+
+                    <div class="side-bar col-lg-3">
+
+
+                    {% include 'include/sidebar.html' %}
+                    </div>
+
+              {% block movie %}
+
+              {% endblock %}
+
+
+
+                </div>
+            </div>
+</section>
+{% endblock %}
