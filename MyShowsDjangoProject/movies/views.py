@@ -1,9 +1,9 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 
 from django.views.generic.base import View
 from .models import Movie
-
+from .forms import ReviewForm
 
 
 class MoviesView(ListView):
@@ -18,6 +18,18 @@ class MovieDetailView(DetailView):
     model = Movie
     template_name = "movies/movie_detail.html"
     slug_field = "url"
-    # def get(self, request, slug):
-    #     movie = Movie.objects.get(url=slug)
-    #     return render(request, "movies/movie_detail.html", context={"movie":movie})
+
+
+class AddReviews(View):
+    """Отзывы"""
+    def post(self, request, pk):
+        form = ReviewForm(request.POST)
+        movie = Movie.objects.get(id=pk)
+        if form.is_valid():
+            form = form.save(commit=False)      # Приостановить сохранение формы
+            # form.movie_id = pk      # В бд поле movie записано как movie.id
+            form.movie = movie      # Здесь хранится объект фильма, который помещается в поле Reviews.movie
+            form.save()
+
+        return redirect(movie.get_absolute_url())
+
