@@ -68,6 +68,14 @@ class Movie(models.Model):
     def __str__(self):
         return self.title
 
+
+    def get_parent_review(self):
+        """Возвращает set элементов, у которых отсутствуют родительские эл.
+        Т.е возвращает родительские комментарии, а не ответные ком."""
+
+        return self.reviews_set.filter(parent__isnull=True)
+
+
     def get_absolute_url(self):
         return reverse("movie_detail", kwargs={"slug":self.url})
 

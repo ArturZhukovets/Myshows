@@ -26,7 +26,9 @@ class AddReviews(View):
         form = ReviewForm(request.POST)
         movie = Movie.objects.get(id=pk)
         if form.is_valid():
-            form = form.save(commit=False)      # Приостановить сохранение формы
+            form = form.save(commit=False)      # todo Приостановить сохранение формы (разобраться как с этим работать)
+            if request.POST.get("parent", None):  # None - обязательно, чтобы не отвалиться с ошибкой):
+                form.parent_id = int(request.POST.get("parent"))
             # form.movie_id = pk      # В бд поле movie записано как movie.id
             form.movie = movie      # Здесь хранится объект фильма, который помещается в поле Reviews.movie
             form.save()

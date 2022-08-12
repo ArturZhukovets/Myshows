@@ -617,7 +617,9 @@ ul.tic-info li {
 .bottom-gd.row {
     margin: 0;
 }
-
+.reviews{
+width: 100%;
+}
 /*-- //features --*/
 /*-- /New-Arrivals --*/
 .product-shoe-info {
