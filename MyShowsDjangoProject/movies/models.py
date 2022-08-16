@@ -132,7 +132,7 @@ class Reviews(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="фильм")
 
     def __str__(self):
-        return f"{self.name} - {self.movie}"
+        return f"{self.name} - {self.movie} | {self.email}"
 
     class Meta:
         verbose_name = "Отзыв"
