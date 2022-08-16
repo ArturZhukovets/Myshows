@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+
 from .models import Category, Movie, MovieShots, Actor, Genre, Rating, RatingStar, Reviews
 
 
@@ -29,13 +31,14 @@ class MovieAdmin(admin.ModelAdmin):
     save_on_top = True  # Разместить кнопки сохранения и изменения вверху страницы
     save_as = True # Добавляет возможность в случае редактирования сохранять как новый объект
     list_editable = ("draft", "category") # Поля можно редактировать прямо из списка
+    readonly_fields = ("get_image",)
     # Здесь группировка полей в нужном порядке
     fieldsets = (
         (None, {
             "fields":(('title', 'tagline'), )
         }),
         (None, {
-            "fields": ("description", "poster")
+            "fields": ("description", ("poster", "get_image"))
         }),
         (None, {
             "fields": (("year", "world_premier", "country"),)
@@ -48,11 +51,15 @@ class MovieAdmin(admin.ModelAdmin):
             "fields":(('fees_in_usa', 'fees_in_world'),)
         }),
         ("Options", {
-            "fields":("url", "draft" )
+            "fields":("url", "draft")
         })
 
     )
 
+    def get_image(self, obj):
+        return mark_safe(f'<img src="{obj.poster.url}" width="150" height="210"')
+
+    get_image.short_description = 'Постер' # Поменять имя отображения в админке
 
 
 @admin.register(Reviews)
@@ -71,7 +78,16 @@ class GenreAdmin(admin.ModelAdmin):
 @admin.register(Actor)
 class ActorAdmin(admin.ModelAdmin):
     """Актёры"""
-    list_display = ('name', 'age', )
+    list_display = ('name', 'age', 'get_image')
+    readonly_fields = ('get_image', )
+
+    def get_image(self, obj:Actor):
+        """Возвращает путь к изображению в виде тега. Добавляем данный метод в list_display"""
+        # Вернет в html формате (как тег) указанный путь.
+        return mark_safe(f'<img src={obj.image.url} width="50" height="60"')
+
+    get_image.short_description = 'Изображение'
+
 
 @admin.register(Rating)
 class RatingAdmin(admin.ModelAdmin):
@@ -82,7 +98,15 @@ class RatingAdmin(admin.ModelAdmin):
 @admin.register(MovieShots)
 class MovieShotsAdmin(admin.ModelAdmin):
     """Кадры из фильма"""
-    list_display = ('title', 'movie')
+    list_display = ('title', 'movie', 'get_image')
+    readonly_fields = ('get_image', )
 
+    def get_image(self, obj:MovieShots):
+        # Вернет в html формате (как тег) указанный путь.
+        return mark_safe(f'<img src="{obj.image.url}" width="50" height="60"')
+
+    get_image.short_description = 'Изображение'
 
 admin.site.register(RatingStar)
+admin.site.site_title = "MyShows"
+admin.site.site_header = "MyShows"
