@@ -1,7 +1,19 @@
 from django.contrib import admin
+from django import forms
 from django.utils.safestring import mark_safe
 
 from .models import Category, Movie, MovieShots, Actor, Genre, Rating, RatingStar, Reviews
+
+from ckeditor_uploader.widgets import CKEditorUploadingWidget
+
+
+class MovieAdminForm(forms.ModelForm):
+    description = forms.CharField(label="Описание", widget=CKEditorUploadingWidget())
+
+    class Meta:
+        model = Movie
+        fields = '__all__'
+
 
 
 @admin.register(Category)
@@ -27,12 +39,13 @@ class MovieAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "url", "draft",)
     list_filter = ("category", "year")
     search_fields = ('title', 'category__name')
+    form = MovieAdminForm
     inlines = [ReviewInline] # Передаём классы, которые хотим прикрепить
     save_on_top = True  # Разместить кнопки сохранения и изменения вверху страницы
     save_as = True # Добавляет возможность в случае редактирования сохранять как новый объект
     list_editable = ("draft", "category") # Поля можно редактировать прямо из списка
     readonly_fields = ("get_image",)
-    # Здесь группировка полей в нужном порядке
+    # Здесь группировка полей в нужном порядке в качестве первого аргумента кортежа будет выступать название поля
     fieldsets = (
         (None, {
             "fields":(('title', 'tagline'), )
