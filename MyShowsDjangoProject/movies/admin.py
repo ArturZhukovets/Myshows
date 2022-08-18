@@ -8,6 +8,8 @@ from ckeditor_uploader.widgets import CKEditorUploadingWidget
 
 
 class MovieAdminForm(forms.ModelForm):
+    """Форма для написания описания в админке
+    Взята из приложения ckeditor"""
     description = forms.CharField(label="Описание", widget=CKEditorUploadingWidget())
 
     class Meta:
@@ -39,6 +41,7 @@ class MovieAdmin(admin.ModelAdmin):
     list_display = ("title", "category", "url", "draft",)
     list_filter = ("category", "year")
     search_fields = ('title', 'category__name')
+    actions = ("publish", "unpublish") # Добавляем 2 действия pub / unpub
     form = MovieAdminForm
     inlines = [ReviewInline] # Передаём классы, которые хотим прикрепить
     save_on_top = True  # Разместить кнопки сохранения и изменения вверху страницы
@@ -72,6 +75,25 @@ class MovieAdmin(admin.ModelAdmin):
     def get_image(self, obj):
         return mark_safe(f'<img src="{obj.poster.url}" width="150" height="210"')
 
+
+    def unpublish(self, request, queryset):
+        """Добавление Action. Снимает публикации у записей."""
+        row_update = queryset.update(draft=True)
+        message_bit = f"{row_update} записей было обновлено"
+        self.message_user(request, message_bit)
+
+    def publish(self, request, queryset):
+        """Добавление Action. Публикует выбранные записи."""
+        row_update = queryset.update(draft=False)
+        message_bit = f"{row_update} записей было обновлено"
+        self.message_user(request, f"{message_bit}")
+
+
+
+
+    publish.short_description = "Опубликовать"
+    publish.allowed_permissions = ('change', ) # Права пользователя в админке допускают изменения
+    unpublish.short_description = "Снять с публикации"
     get_image.short_description = 'Постер' # Поменять имя отображения в админке
 
 
