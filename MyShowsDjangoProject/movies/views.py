@@ -16,7 +16,6 @@ class MoviesView(ListView):
     #     """Добавление категорий в словарь контекста."""
     #     context = super().get_context_data()
     #     context["categories"] = Category.objects.all()
-    #     x = 0
     #     return context
 
 
