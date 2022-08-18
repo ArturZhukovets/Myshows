@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 
 from django.views.generic.base import View
-from .models import Movie
+from .models import Movie, Category
 from .forms import ReviewForm
 
 
@@ -11,6 +11,13 @@ class MoviesView(ListView):
     model = Movie
     template_name = "movies/movie_list.html"    # Ищет по дефолту шаблон movie_list.html
     queryset = Movie.objects.filter(draft=False)
+
+    # def get_context_data(self, *args, **kwargs):
+    #     """Добавление категорий в словарь контекста."""
+    #     context = super().get_context_data()
+    #     context["categories"] = Category.objects.all()
+    #     x = 0
+    #     return context
 
 
 class MovieDetailView(DetailView):
