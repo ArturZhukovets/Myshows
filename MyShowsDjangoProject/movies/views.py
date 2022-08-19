@@ -77,13 +77,19 @@ class FilterMovieView(GenreYear, ListView):
         if 'year' in self.request.GET and 'genre' in self.request.GET:
             queryset = Movie.objects.filter(
                 Q(year__in=self.request.GET.getlist("year")),
-                Q(genres__in=self.request.GET.getlist('genre'))
-            )
+                Q(genres__in=self.request.GET.getlist('genre')))
+
+        elif 'year' in self.request.GET:
+                queryset = Movie.objects.filter(year__in=self.request.GET.getlist("year"))
+        elif 'genre' in self.request.GET:
+                queryset = Movie.objects.filter(genres__in=self.request.GET.getlist("genre"))
         else:
-            queryset = Movie.objects.filter(
-                Q(year__in=self.request.GET.getlist("year")) |
-                Q(genres__in=self.request.GET.getlist('genre'))
-            )
+            queryset = Movie.objects.all()
+
         return queryset
+
+
+
+
 
 
