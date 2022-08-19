@@ -24,6 +24,10 @@ class Actor(models.Model):
     description = models.TextField("Описание")
     image = models.ImageField("Изображение", upload_to="actors/")
 
+
+    def get_absolute_url(self):
+        return reverse("actor_detail", kwargs={"slug": self.name})
+
     def __str__(self):
         return self.name
 
