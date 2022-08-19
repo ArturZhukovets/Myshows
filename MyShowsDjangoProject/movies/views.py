@@ -1,12 +1,29 @@
+from django.db.models import Q
 from django.shortcuts import render, redirect
 from django.views.generic import ListView, DetailView
 
 from django.views.generic.base import View
-from .models import Movie, Actor
+from .models import Movie, Actor, Genre
 from .forms import ReviewForm
 
 
-class MoviesView(ListView):
+
+class GenreYear:
+    """
+    Жанры и года фильмов
+    Наследование этого класса дополняет get_context_data
+    """
+
+    def get_genres(self):
+        return Genre.objects.all()
+
+    def get_years(self):
+        return Movie.objects.filter(draft=False).values("year") # .values -> Qs [{'year': year},]  .values_list -> Qs []
+
+
+
+
+class MoviesView(GenreYear, ListView):
     """Список фильмов"""
     model = Movie
     template_name = "movies/movie_list.html"    # Ищет по дефолту шаблон movie_list.html
@@ -19,7 +36,7 @@ class MoviesView(ListView):
     #     return context
 
 
-class MovieDetailView(DetailView):
+class MovieDetailView(GenreYear, DetailView):
     """Полное описание фильма"""
     model = Movie
     template_name = "movies/movie_detail.html"
@@ -42,9 +59,31 @@ class AddReviews(View):
         return redirect(movie.get_absolute_url())
 
 
-class ActorView(DetailView):
+class ActorView(GenreYear, DetailView):
     """Вывод информации об актёре"""
     model = Actor
     template_name = "movies/actor.html"
     slug_field = "name"  # slug from field name
+
+
+class FilterMovieView(GenreYear, ListView):
+    """
+    Фильтр фильмов
+    Логическое ИЛИ Q(item) | Q(item)
+    Логическое И Q(item), Q(item)
+    """
+
+    def get_queryset(self):
+        if 'year' in self.request.GET and 'genre' in self.request.GET:
+            queryset = Movie.objects.filter(
+                Q(year__in=self.request.GET.getlist("year")),
+                Q(genres__in=self.request.GET.getlist('genre'))
+            )
+        else:
+            queryset = Movie.objects.filter(
+                Q(year__in=self.request.GET.getlist("year")) |
+                Q(genres__in=self.request.GET.getlist('genre'))
+            )
+        return queryset
+
 
