@@ -107,14 +107,16 @@ class RatingStar(models.Model):
     value = models.PositiveSmallIntegerField("Значение", default=0)
 
     def __str__(self):
-        return self.value
+        return str(self.value)
 
     class Meta:
         verbose_name = "Звезда рейтинга"
         verbose_name_plural = "Звезды рейтинга"
+        ordering = ["-value"]
 
 
 class Rating(models.Model):
+    """Рейтинг, который добавил пользователь с определённым ip"""
     ip = models.CharField("IP адрес", max_length=15)
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name="Звезда")
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="фильм")
