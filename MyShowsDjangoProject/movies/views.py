@@ -128,5 +128,12 @@ class AddStarRating(View):
             return HttpResponse(status=400)
 
 
+class Search(ListView):
+    """Поиск по названию фильма.
+    Поиск по title без учёта регистра. Переопределён метод get_queryset"""
+    def get_queryset(self):
+        return Movie.objects.filter(title__icontains=self.request.GET['query'])
+
+
 
 

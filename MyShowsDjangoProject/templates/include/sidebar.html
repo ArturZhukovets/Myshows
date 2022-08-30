@@ -1,10 +1,11 @@
 <!--Подключаем movie_tag.py-->
 {% load movie_tag %}
-
+    <!-- Search panel   -->
     <div class="search-bar w3layouts-newsletter">
         <h3 class="sear-head editContent">Поиск фильма</h3>
-        <form action="#" method="post" class="d-flex editContent">
-            <input type="search" placeholder="Введите название..." name="search" class="form-control" required="">
+
+        <form action="{% url 'search_list' %}" method="get" class="d-flex editContent">
+            <input type="search" placeholder="Введите название..." name="query" class="form-control" required="">
             <button class="btn1 btn"><span class="fa fa-search" aria-hidden="true"></span></button>
         </form>
     </div>
