@@ -29,6 +29,7 @@ class MoviesView(GenreYear, ListView):
     model = Movie
     template_name = "movies/movie_list.html"    # Ищет по дефолту шаблон movie_list.html
     queryset = Movie.objects.filter(draft=False)
+    paginate_by = 5     # Выводится по 3 фильма
 
     # def get_context_data(self, *args, **kwargs):
     #     """Добавление категорий в словарь контекста."""
@@ -78,21 +79,29 @@ class FilterMovieView(GenreYear, ListView):
     Логическое ИЛИ Q(item) | Q(item)
     Логическое И Q(item), Q(item)
     """
+    paginate_by = 3
+
 
     def get_queryset(self):
         if 'year' in self.request.GET and 'genre' in self.request.GET:
             queryset = Movie.objects.filter(
                 Q(year__in=self.request.GET.getlist("year")),
-                Q(genres__in=self.request.GET.getlist('genre')))
+                Q(genres__in=self.request.GET.getlist('genre'))).distinct()
 
         elif 'year' in self.request.GET:
-                queryset = Movie.objects.filter(year__in=self.request.GET.getlist("year"))
+                queryset = Movie.objects.filter(year__in=self.request.GET.getlist("year")).distinct()
         elif 'genre' in self.request.GET:
-                queryset = Movie.objects.filter(genres__in=self.request.GET.getlist("genre"))
+                queryset = Movie.objects.filter(genres__in=self.request.GET.getlist("genre")).distinct()
         else:
             queryset = Movie.objects.all()
 
         return queryset
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['year'] = ''.join([f"year={x}&" for x in self.request.GET.getlist('year')])
+        context['genre'] = ''.join([f"genre={x}&" for x in self.request.GET.getlist('genre')])
+        return context
 
 class AddStarRating(View):
     """Добавление рейтинга к фильму"""
